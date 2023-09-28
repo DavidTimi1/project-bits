@@ -171,12 +171,13 @@
         popUp.addEventListener('touchstart', selectPopUp, {passive: true});
         document.addEventListener('touchend', closePopUp);
         // document.addEventListener('mouseup', closePopUp);
-        let initTop;
+        let initY;
+        let initTop = popUp.offsetTop;
         let lastTop = 0;
         let dir = "down";
     
         function selectPopUp(){
-            initTop = event.type === "touchstart"? event.changedTouches[0].clientY : event.clientY;
+            initY = event.type === "touchstart"? event.changedTouches[0].clientY : event.clientY;
             popUp.classList.add("no-trans");
             // document.addEventListener('mousemove', movePopUp, {passive: true});
             document.addEventListener('touchmove', movePopUp, {passive: true});
@@ -184,10 +185,10 @@
     
         function movePopUp(){
             let pointerY = event.type === "touchmove"? event.changedTouches[0].clientY : event.clientY;
-            dist = pointerY - initTop;
+            dist = pointerY - initY;
             if (dist > 0){
                 dir = dist > lastTop? "down" : "up";
-                popUp.style.top = dist + "px";
+                popUp.style.top = dist + initTop + "px";
                 lastTop = dist;
             }
         }
@@ -205,10 +206,29 @@
                 popUp.getElementsByClassName("window-exit")[0].onclick = null;
                 popUp.getElementsByClassName("pop-up-top")[0].onclick = null;
                 popUp.style.top = "110%";
-                popUpWindow.style.display = "none";
+                popUp.addEventListener(transitionName, eot=()=>{
+                    popUpWindow.style.display = "none";
+                    popUp.removeEventListener(transitionName, eot)
+                }
             } else {
                 popUp.style.top = "10%";
             }
         }
 }
+
+function getTransitionEndEventName() {
+    var transitions = {
+        "transition"      : "transitionend",
+        "OTransition"     : "oTransitionEnd",
+        "MozTransition"   : "transitionend",
+        "WebkitTransition": "webkitTransitionEnd"
+    }
+    let bodyStyle = document.body.style;
+    for (let transition in transitions) {
+        if (bodyStyle[transition] != undefined) {
+            return transitions[transition];
+        } 
+    }
+}
+const transitionName = getTransitionEndEventName();
 </script>
