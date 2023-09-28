@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://kit.fontawesome.com/9564db1e37.js" crossorigin="anonymous"></script>
+    <title>Sliding PopUp Contact Card</title>
+    <style>
+        .pop-up-window {
+            height: 100vh;
+            width: 100vw;
+            position: fixed;
+            display: none;
+            z-index: 40;
+            left: 0px;
+            background-color: rgba(0,0,0,0.3);
+        }
+        .pop-up-container {
+            position: absolute;
+            width: 90%;
+            height: 100%;
+            transition: top 0.5s ease;
+        }
+        .pop-up-div {
+            height: 100%;
+            width: 100%;
+            position: relative;
+            background-color: #071422;
+            box-shadow: 0px 0px 10px black;
+            border-radius: 25px 25px 0px 0px;
+        
+            & > .window-exit {
+                color: white;
+                position: absolute;
+                top: 25px;
+                left: 25px;
+                text-shadow: 1px 1px 3px #222;
+            }
+        }
+        .window-notch {
+            top: 5px;
+            position: absolute;
+            height: 5px;
+            background-color: #17385e;
+            left: calc((100vw - 50px) / 2);
+            width: 50px;
+            border-radius: 5px;
+            box-shadow: 1px 1px 3px #222;
+        }
+        .pop-up-content {
+            overflow-x: hidden;
+            overflow-y: auto;
+            align-items: center;
+        
+            & > .contact-dp {
+                background: url("https://images.rawpixel.com/image_png_social_square/cHJpdmF0ZS9sci9pbWFnZXMvd2Vic2l0ZS8yMDIzLTAxL3JtNjA5LXNvbGlkaWNvbi13LTAwMi1wLnBuZw.png");
+                height: 200px;
+                aspect-ratio: 1/1;
+                border-radius: 50%;
+                border: 2px solid #444;
+                background-size: contain;
+                margin: auto;
+            }
+            & > .contact-details {
+                align-items: inherit;
+                display: flex;
+                flex-direction: column;
+                font-weight: 600;
+            }
+            & > .contact-actions {
+                align-items: inherit;
+                width: 50%;
+                margin: auto;
+                display: flex;
+                align-items: baseline;
+                justify-content: space-between;
+        
+                & .fa-solid {
+                    color: #ff8000;
+                    text-shadow: 1px 1px 3px #222;
+                }
+            }
+            & > .contact-about {
+                font-size: larger;
+                margin-left: 10px;
+                width: calc(90%);
+                word-wrap: break-word;
+                line-height: 20px;
+            }
+            & > hr {
+                height: 10px;
+                background-color: #aaa;
+                box-shadow: 0px 0px 3px #222;
+            }
+            & li {
+                list-style-type: none;
+            }
+        }
+        .no-trans {
+            transition: none !important;
+        }
+
+    </style>
+</head>
+<body>
+    ...
+    <div class="pop-up-window">
+        <div class="pop-up-container">
+            <div class="pop-up-div">
+                <div class="window-notch"></div>
+                <i class="fa-solid fa-xmark window-exit"></i>
+                <div class="pop-up-content custom-scroll">
+                    <div class="contact-dp"></div>
+                    <div class="contact-details">
+                        <span>David</span>
+                        <span>+0123456789</span>
+                        <span>Online</span>
+                    </div>
+                    <div class="contact-actions">
+                        <div class="message-action">
+                            <i class="fa-solid fa-message"></i>
+                            <span>Message</span>
+                        </div>
+                        <div class="edit-action">
+                            <i class="fa-solid fa-pencil"></i>
+                            <span>Edit</span>
+                        </div>
+                        <div class="invite-action">
+                            <i class="fa-solid fa-xmark plus"></i>
+                            <span>Invite</span>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="contact-about">
+                        <h6>About</h6>
+                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Perferendis, quam ex! Id eaque labore laboriosam numquam iste ea? Libero, exercitationem.
+                    </div>
+                    <hr>
+                    <div class="others">
+                        <ul>
+                            <li class="danger-message">Report <span class="name-fill-in"></span></li>
+                            <li class="danger-message">Clear Chats</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<script>
+    function openPopUp(){
+        const popUp = document.getElementsByClassName("pop-up-container")[0];
+        const popUpWindow = document.getElementsByClassName("pop-up-window")[0];
+        popUpWindow.style.display = "block";
+        popUp.style.top = "0px";
+        popUp.getElementsByClassName("window-exit")[0].addEventListener('click', closePopUp);
+        const dragArea = popUp.getElementsByClassName("pop-up-container")[0];
+        dragArea.addEventListener('mousedown', selectPopUp, {passive: true});
+        dragArea.addEventListener('touchstart', selectPopUp, {passive: true});
+        document.addEventListener('touchend', closePopUp);
+        document.addEventListener('mouseup', closePopUp);
+        let initTop;
+        let lastTop = 0;
+        let dir = "down";
+    
+        function selectPopUp(){
+            initTop = event.type === "touchstart"? event.changedTouches[0].clientY : event.clientY;
+            popUp.classList.add("no-trans");
+            document.addEventListener('mousemove', movePopUp, {passive: true});
+            document.addEventListener('touchmove', movePopUp, {passive: true});
+        }
+    
+        function movePopUp(){
+            let pointerY = event.type === "touchmove"? event.changedTouches[0].clientY : event.clientY;
+            dist = pointerY - initTop;
+            if (dist > 0){
+                dir = dist > lastTop? "down" : "up";
+                popUp.style.top = dist + "px";
+                lastTop = dist;
+            }
+        }
+    
+        function closePopUp(){
+            popUp.classList.remove("no-trans");
+            if (dir == "down"){
+                popUp.getElementsByClassName("window-exit")[0].removeEventListener('click', closePopUp);
+                dragArea.removeEventListener('touchstart', selectPopUp);
+                dragArea.removeEventListener('mousedown', selectPopUp);
+                document.removeEventListener('touchend', closePopUp);
+                document.removeEventListener('mouseup', closePopUp);
+                document.removeEventListener('mousemove', movePopUp);
+                document.removeEventListener('touchmove', movePopUp);
+                popUp.style.top = "110%";
+                popUpWindow.style.display = "none";
+            } else {
+                popUp.style.top = "0px";
+            }
+        }
+}
+</script>
