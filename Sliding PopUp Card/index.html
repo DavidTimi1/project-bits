@@ -108,6 +108,38 @@
         .no-trans {
             transition: none !important;
         }
+        .contact-slip {
+            bottom: 0px;
+            left: 0px;
+            position: absolute;
+            width: 100%;
+            height: 150px;
+            padding: 20px;
+            border-radius: 20px 20px 0px 0px;
+            background-color: #071422;
+            display: flex;
+            align-items: baseline;
+            justify-content: space-around;
+
+            > .contact-dp {
+                background: #17385e url("https://images.rawpixel.com/image_png_social_square/cHJpdmF0ZS9sci9pbWFnZXMvd2Vic2l0ZS8yMDIzLTAxL3JtNjA5LXNvbGlkaWNvbi13LTAwMi1wLnBuZw.png");
+                aspect-ratio: 1/1;
+                border-radius: 50%;
+                background-size: contain;
+            }
+            
+            > .contact-short-details {
+                display: flex;
+                flex-direction: column;
+                margin: 1px;
+                font-size: 30px;
+                color: white
+            }
+            > fa-solid {
+                color: #ff8000;
+                font-size: 40px;
+            }
+        }
 
     </style>
 </head>
@@ -157,8 +189,16 @@
             </div>
         </div>
     </div>
+    <div id="contact-slip">
+        <div class="contact-dp"></div>
+        <div class="contact-short-details"></div>
+        <i class="fa-solid fa-eye"></i>
+    </div>
 </body>
 <script>
+    const contactSlip = document.getElementsByClassName("contact-slip")[0];
+    contactSlip.addEventListener('click', openPopUp);
+    contactSlip.addEventListener('touchstart', openPopUp);
     function openPopUp(){
         const popUp = document.getElementsByClassName("pop-up-container")[0];
         const popUpWindow = document.getElementsByClassName("pop-up-window")[0];
