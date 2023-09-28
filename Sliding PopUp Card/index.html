@@ -51,6 +51,7 @@
             overflow-x: hidden;
             overflow-y: auto;
             align-items: center;
+            margin-top: 20px;
         
             & > .contact-dp {
                 background: url("https://images.rawpixel.com/image_png_social_square/cHJpdmF0ZS9sci9pbWFnZXMvd2Vic2l0ZS8yMDIzLTAxL3JtNjA5LXNvbGlkaWNvbi13LTAwMi1wLnBuZw.png");
@@ -154,9 +155,9 @@
         popUpWindow.style.display = "block";
         popUp.style.top = "0px";
         popUp.getElementsByClassName("window-exit")[0].addEventListener('click', closePopUp);
-        const dragArea = popUp.getElementsByClassName("pop-up-container")[0];
-        dragArea.addEventListener('mousedown', selectPopUp, {passive: true});
-        dragArea.addEventListener('touchstart', selectPopUp, {passive: true});
+        // const dragArea = popUp.getElementsByClassName("pop-up-container")[0];
+        popUp.addEventListener('mousedown', selectPopUp, {passive: true});
+        popUp.addEventListener('touchstart', selectPopUp, {passive: true});
         document.addEventListener('touchend', closePopUp);
         document.addEventListener('mouseup', closePopUp);
         let initTop;
@@ -184,8 +185,8 @@
             popUp.classList.remove("no-trans");
             if (dir == "down"){
                 popUp.getElementsByClassName("window-exit")[0].removeEventListener('click', closePopUp);
-                dragArea.removeEventListener('touchstart', selectPopUp);
-                dragArea.removeEventListener('mousedown', selectPopUp);
+                popUp.removeEventListener('touchstart', selectPopUp);
+                popUp.removeEventListener('mousedown', selectPopUp);
                 document.removeEventListener('touchend', closePopUp);
                 document.removeEventListener('mouseup', closePopUp);
                 document.removeEventListener('mousemove', movePopUp);
