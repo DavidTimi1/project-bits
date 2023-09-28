@@ -17,6 +17,7 @@
             background-color: rgba(0,0,0,0.5);
         }
         .pop-up-container {
+            top: 110%;
             position: absolute;
             width: 100%;
             height: 90%;
@@ -112,7 +113,7 @@
 </head>
 <body>
     ...
-    <div class="pop-up-window">
+    <div class="pop-up-window" tabindex="-1">
         <div class="pop-up-container">
             <div class="pop-up-div">
                 <div class="pop-up-top">
@@ -162,13 +163,14 @@
         const popUp = document.getElementsByClassName("pop-up-container")[0];
         const popUpWindow = document.getElementsByClassName("pop-up-window")[0];
         popUpWindow.style.display = "block";
-        popUp.style.top = "0px";
-        popUp.getElementsByClassName("window-exit")[0].addEventListener('click', closePopUp);
-        // const dragArea = popUp.getElementsByClassName("pop-up-container")[0];
-        popUp.addEventListener('mousedown', selectPopUp, {passive: true});
+        popUp.style.top = "10%";
+        popUp.getElementsByClassName("window-exit")[0].onclick = closePopUp;
+        popUp.getElementsByClassName("pop-up-top")[0].onclick = closePopUp;
+        const dragArea = popUp.getElementsByClassName("pop-up-container")[0];
+        // popUp.addEventListener('mousedown', selectPopUp, {passive: true});
         popUp.addEventListener('touchstart', selectPopUp, {passive: true});
         document.addEventListener('touchend', closePopUp);
-        document.addEventListener('mouseup', closePopUp);
+        // document.addEventListener('mouseup', closePopUp);
         let initTop;
         let lastTop = 0;
         let dir = "down";
@@ -176,7 +178,7 @@
         function selectPopUp(){
             initTop = event.type === "touchstart"? event.changedTouches[0].clientY : event.clientY;
             popUp.classList.add("no-trans");
-            document.addEventListener('mousemove', movePopUp, {passive: true});
+            // document.addEventListener('mousemove', movePopUp, {passive: true});
             document.addEventListener('touchmove', movePopUp, {passive: true});
         }
     
@@ -195,15 +197,17 @@
             if (dir == "down"){
                 popUp.getElementsByClassName("window-exit")[0].removeEventListener('click', closePopUp);
                 popUp.removeEventListener('touchstart', selectPopUp);
-                popUp.removeEventListener('mousedown', selectPopUp);
+                // popUp.removeEventListener('mousedown', selectPopUp);
                 document.removeEventListener('touchend', closePopUp);
-                document.removeEventListener('mouseup', closePopUp);
-                document.removeEventListener('mousemove', movePopUp);
+                // document.removeEventListener('mouseup', closePopUp);
+                // document.removeEventListener('mousemove', movePopUp);
                 document.removeEventListener('touchmove', movePopUp);
+                popUp.getElementsByClassName("window-exit")[0].onclick = null;
+                popUp.getElementsByClassName("pop-up-top")[0].onclick = null;
                 popUp.style.top = "110%";
                 popUpWindow.style.display = "none";
             } else {
-                popUp.style.top = "0px";
+                popUp.style.top = "10%";
             }
         }
 }
