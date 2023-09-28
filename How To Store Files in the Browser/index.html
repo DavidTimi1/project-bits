@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Files: All</title>
+    <style>
+        :root {
+            font-family:Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+        }
+        header{
+            background-color: #bbb;
+            width: 100vw;
+            font-size: 40px;
+            font-variant: small-caps;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 0px;
+        }
+        #dropdown-container {
+            width: max-content;
+            position: fixed;
+            bottom: 20%;
+            right: 20px;
+            color: white;
+            cursor: pointer;
+
+            & > span {
+                font-size: 50px;
+                border-radius: 50px 50px;
+                background-color: lightblue;
+                padding: 20px;
+                font-weight: 700;
+                aspect-ratio: 1/1;
+            }
+        }
+        #dropdown-list {
+            position: absolute;
+            opacity: 0;
+            display: none;
+            transition: opacity 1s ease;
+            font-size: inherit;
+            padding: 10px;
+            border: 1px solid black ;
+            color: white;
+            background-color: grey;
+            right: 30px;
+            width: max-content;
+            word-wrap: normal;
+            top: 105%;
+            border-radius: 10px;
+        }
+        #dropdown-list:focus, #dropdown-container:focus #dropdown-list{
+            display: flex;
+            flex-direction: column;
+            opacity: 1;
+            z-index: inherit;
+
+            > span {
+                opacity: 0.7;
+                &:hover {
+                    opacity: 1;
+                    text-shadow: 0 0 3px black;
+                }
+            }
+            & input {
+                display: none;
+            }
+        }
+        nav {
+            background-color: #bbb;
+            box-shadow: 0px 2px 2px #555;
+            width: 100vw;
+            margin: 0px;
+            display: flex;
+
+            & a {
+                    width: 100%;
+                    font-size: 20px;
+                    font-variant: small-caps;
+                    cursor: pointer;
+                    text-align: center;
+                    transition: all 0.2s ease-in-out;
+                }
+            .active {
+                color: lightblue;
+                border-bottom: 3px solid lightblue;
+                text-shadow: 1px 1px 2px black;
+            }
+        }
+        body {
+            background-color: #dde;
+            margin: 0px;
+            padding: 0px;
+            width: auto;
+            overflow: hidden;
+        }
+        #current-view {
+            overflow-x: hidden;
+            width: 100%;
+            height: 80vh;
+        }
+        #full-slide {
+            width: calc(500vw);
+            height: 100%;
+            display: flex;
+            position: relative;
+            left: 0px;
+            height: 100%;
+            transition: left 0.2s ease-in-out;
+
+            .view {
+                display: flex;
+                flex-wrap: wrap;
+                width: calc(100%/5);
+                justify-content: start;
+                /* align-items: center; */
+                height: 100%;
+                overflow-y: auto;
+            }
+        }
+        .grid-item {
+            position: relative;
+            width: calc((100%/4) - 2px);
+            /* aspect-ratio: 1/1; */
+            height: calc((100%/4) - 2px);
+            padding: 0.5px;
+            overflow: hidden;
+            border-radius: 5px;
+        }
+        .url-overlay {
+            background-color: black;
+            opacity: 0.7;
+            position: fixed;
+            top: 0px;
+            left: 0px;
+            height: 100%;
+            width: 100%;
+            display: none;
+
+            & > span {
+                padding: 50px;
+                background-color: #ffffff;
+                border-radius: 20px;
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%,-50%);
+
+                &::before {
+                    position: absolute;
+                    left: 100%;
+                    bottom: 100%;
+                    width: max-content;
+                    aspect-ratio: 1/1;
+                    padding: 5px 10px;
+                    line-height: 25px;
+                    content: 'x';
+                    background-color: red;
+                    color: white;
+                    font-weight: 700;
+                    font-size: 20px;
+                    border-radius: 10px;
+                }
+
+                & input {
+                    padding: 10px;
+                    border-radius: 20px;
+                    outline: 1px solid lightblue;
+                    border: 2px solid lightblue;
+                }
+                & > label {
+                    color: black;
+                    font-weight: 600;
+                }
+                & > button {
+                    position: relative;
+                    padding: 10px 20px;
+                    border-radius: 20px;
+                    background-color: #0f0;
+                }
+            }
+        }
+        .no-trans{
+            transition: none !important;
+        }
+
+    </style>
+</head>
+<body>
+    <header>
+        <span>Store Files in the Browser</span>
+    </header>
+    <nav>
+        <a href="#all-slide" class="active">All</a>
+        <a href="#img-slide">Images</a>
+        <a href="#vid-slide">Videos</a>
+        <a href="#aud-slide">Audios</a>
+        <a href="#other-slide">Other</a>
+    </nav>
+    <div id="current-view" dropzone="copy">
+        <div id="full-slide">
+            <div class="view" id="all-slide" data-section="All" style="background-color: red">
+            </div>
+            <div class="view" id="img-slide" data-section="Images" style="background-color: green">
+            </div>
+            <div class="view" id="vid-slide" data-section="Videos" style="background-color: blue">
+            </div>
+            <div class="view" id="aud-slide" data-section="Audios" style="background-color: yellow"></div>
+            <div class="view" id="other-slide" data-section="Others" style="background-color: black"></div>
+        </div>
+    </div>
+    <div id="dropdown-container" tabindex="-1">
+        <span>+</span>
+        <div id="dropdown-list">
+            <span onclick="showURLOverlay()">URL of file</span>
+            <span><input type="file" id="upload" multiple="true"><label for="upload">Click to Upload</label></span>
+        </div>
+    </div>
+    <div class="url-overlay" tabindex="-1">
+        <span>
+        <label for="url-input">Link:</label><input id="url-input" type="text" required placeholder="https://example.com/file.xyz">
+        <label for="url-name">Name:</label><input id="url-name" type="text" placeholder="default: download[time]">
+        <button id="url-add">Add</button>
+    </span></div>
+
+</body>
+
+    <script>
+        document.getElementById("upload").addEventListener("input", ()=>{
+            target = event.target;
+            if (db){
+                let files = target.files
+                for (let file of files){
+                    console.log(file.type);
+                    save_file(file, file.type.split("/")[0], file.name);
+                }
+            }
+        });
+
+        document.getElementById("url-add").onclick = ()=>{
+            let link = document.getElementById("url-input").value;
+            let name = document.getElementById("url-name").value;
+            name = name? name: "download_" + new Date().toUTCString().replaceAll(" ","_");
+            if (link){
+                fetch(link)
+                .then(res => {
+                    return res.blob()
+                }).then(res => {
+                    save_file(res, res.type.split("/")[0], name);
+                }).catch(err => alert("The given URL is invalid"))
+            }
+        }
+
+        document.querySelectorAll("nav a").forEach(element => {
+            element.onclick = ()=>{
+                event.preventDefault();
+
+                document.querySelector("nav a.active").classList.remove("active");
+                let section = document.getElementById(`${element.getAttribute("href").slice(1)}`);
+                let newLeft = section.offsetLeft;
+                document.title = "Files: "+section.getAttribute("data-section");
+                document.getElementById("full-slide").style.left = -newLeft + "px";
+                element.classList.add("active");
+            }
+        })
+        
+        document.getElementById("full-slide").addEventListener("touchstart", touchstart=()=>{
+            let touchX = event.changedTouches[0].clientX;
+            let target = document.getElementById("full-slide");
+            target.classList.add("no-trans");
+            if (!target.style.left) target.style.left = "0px";
+            let initLeft = parseInt(target.style.left);
+            let scrollableWidth = target.offsetWidth * 0.8;
+            let sectWidth = scrollableWidth/4;
+
+            document.addEventListener('touchend', touchend=()=>{
+                target.classList.remove("no-trans");
+                let quo = Math.round(parseInt(target.style.left)/ sectWidth);
+                quo = quo === Infinity? 0 : quo;
+                let newX = quo === 0? 0 : sectWidth*quo;
+                document.querySelector("nav a.active").classList.remove("active");
+                document.querySelectorAll("nav a")[-quo].classList.add("active");
+                target.style.left = newX + "px";
+
+                document.removeEventListener('touchmove', touchmove);
+                document.removeEventListener('touchend', touchstart);
+            });
+
+            document.addEventListener('touchmove', touchmove=()=>{
+                let displacement = initLeft + (event.changedTouches[0].clientX - touchX);
+                if (displacement > 0) displacement = 0;
+                else if (displacement < -scrollableWidth) displacement = -scrollableWidth;
+                target.style.left = displacement + "px";
+            });
+        }, {passive: true});
+
+        let db;
+        const open_request = indexedDB.open("files_db");
+        open_request.onupgradeneeded = function(){
+            db = open_request.result;
+            const files_tb = db.createObjectStore("files_table", {keyPath: "id", autoIncrement: true});
+            files_tb.createIndex("type", "type", {unique: false});
+        }
+
+        open_request.onsuccess = function(){
+            db = event.target.result;
+            db.transaction("files_table").objectStore("files_table")
+            .openCursor().onsuccess = ()=>{
+                cursor = event.target.result;
+                if (cursor){
+                    val = cursor.value;
+                    url = URL.createObjectURL(val.file);
+                    showfile(url, val.type, val.name);
+                    cursor.continue();
+                }
+                console.log("Done!")
+            }
+            
+        }
+
+        function save_file(blob, type, name){
+            files_table = db.transaction("files_table", "readwrite").objectStore("files_table");
+            new_obj = {file: blob, type:type, name:name}
+            files_table.put(new_obj);
+            url = URL.createObjectURL(blob);
+            showfile(url, type, name);
+        }
+
+        function showfile(url,type,name){
+            let file;
+            let cont = document.createElement("div");
+            cont.classList.add("grid-item");
+            switch(type){
+                case "image":
+                    file = document.createElement("img");
+                    file.src = url;
+                    file.classList.add("image-item");
+                    file.alt = "Not available";
+                    file.style = "height: 100%; width:100%";
+                    cont.appendChild(file);
+                    document.getElementById("img-slide").prepend(cont);
+                    break;
+                case "video":
+                    file = document.createElement("video");
+                    file.src = url;
+                    file.style = "height: 100%; width:100%";
+                    file.classList.add("video-item");
+                    file.nodeValue = "Not supported";
+                    cont.appendChild(file);
+                    document.getElementById("vid-slide").prepend(cont);
+                    break;
+                case "audio":
+                    file = document.createElement("audio");
+                    file.src = url;
+                    file.classList.add("audio-item");
+                    file.nodeValue = "Not supported";
+                    cont.appendChild(file);
+                    document.getElementById("aud-slide").prepend(cont);
+                    break;
+                default:
+                    file = document.createElement("div");
+                    file.classList.add("other-item");
+                    cont.appendChild(file);
+                    document.getElementById("other-slide").prepend(cont);
+            }
+            cont = cont.cloneNode("true");
+            document.getElementById("all-slide").prepend(cont);
+        }
+
+        function showURLOverlay(){
+            let target = document.getElementsByClassName("url-overlay")[0];
+            target.style.display = "block";
+            target.onclick = ()=>{
+                if (event.srcElement === target)target.style.display = "none";
+            }
+            
+        }
+    </script>
+</html>
