@@ -6,6 +6,12 @@
     <script src="https://kit.fontawesome.com/9564db1e37.js" crossorigin="anonymous"></script>
     <title>Sliding PopUp Contact Card</title>
     <style>
+        body {
+            margin: 0px;
+            padding: 0px;
+            width: auto;
+            overflow: hidden;
+        }
         .pop-up-window {
             top: 0px;
             height: 100vh;
@@ -113,29 +119,31 @@
             left: 0px;
             position: absolute;
             width: 100%;
-            height: 150px;
+            height: 120px;
             padding: 20px;
             border-radius: 20px 20px 0px 0px;
             background-color: #071422;
             display: flex;
             align-items: baseline;
-            justify-content: space-around;
+            justify-content: space-evenly;
 
             > .contact-dp {
                 background: #17385e url("https://images.rawpixel.com/image_png_social_square/cHJpdmF0ZS9sci9pbWFnZXMvd2Vic2l0ZS8yMDIzLTAxL3JtNjA5LXNvbGlkaWNvbi13LTAwMi1wLnBuZw.png");
                 aspect-ratio: 1/1;
                 border-radius: 50%;
+                height: 80px;
                 background-size: contain;
             }
             
             > .contact-short-details {
                 display: flex;
                 flex-direction: column;
-                margin: 1px;
+                justiify-content: space-evenly
+                margin: 5px;
                 font-size: 30px;
                 color: white
             }
-            > fa-solid {
+            > .fa-solid {
                 color: #ff8000;
                 font-size: 40px;
             }
@@ -191,12 +199,15 @@
     </div>
     <div id="contact-slip">
         <div class="contact-dp"></div>
-        <div class="contact-short-details"></div>
+        <div class="contact-short-details">
+            <span>David</span>
+            <span>+0123456789</span>
+        </div>
         <i class="fa-solid fa-eye"></i>
     </div>
 </body>
 <script>
-    const contactSlip = document.getElementsByClassName("contact-slip")[0];
+    const contactSlip = document.getElementById("contact-slip");
     contactSlip.addEventListener('click', openPopUp);
     contactSlip.addEventListener('touchstart', openPopUp);
     function openPopUp(){
