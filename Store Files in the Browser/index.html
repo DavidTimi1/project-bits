@@ -1,6 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
+<html lang="en"><head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Files: All</title>
@@ -27,10 +25,10 @@
             cursor: pointer;
 
             & > span {
-                font-size: 50px;
-                border-radius: 50px 50px;
+                font-size: 30px;
+                clip-path: circle();
                 background-color: lightblue;
-                padding: 20px;
+                padding: 10px;
                 font-weight: 700;
                 aspect-ratio: 1/1;
             }
@@ -57,7 +55,7 @@
             opacity: 1;
             z-index: inherit;
 
-            > span {
+            > span, label {
                 opacity: 0.7;
                 &:hover {
                     opacity: 1;
@@ -68,6 +66,11 @@
                 display: none;
             }
         }
+
+        button, [role=button] {
+            cursor: pointer;
+        }
+
         nav {
             background-color: #bbb;
             box-shadow: 0px 2px 2px #555;
@@ -81,9 +84,9 @@
                     font-variant: small-caps;
                     cursor: pointer;
                     text-align: center;
-                    border-bottom: 3px solid transparent;
-                    margin-bottom: 1px;
                     transition: all 0.2s ease-in-out;
+                    margin-bottom: 2px;
+                    border-bottom: 3px solid transparent;
                 }
             .active {
                 color: lightblue;
@@ -132,8 +135,7 @@
             border-radius: 5px;
         }
         .url-overlay {
-            background-color: black;
-            opacity: 0.7;
+            background-color: rgba(0, 0, 0, 0.692);
             position: fixed;
             top: 0px;
             left: 0px;
@@ -141,7 +143,7 @@
             width: 100%;
             display: none;
 
-            & > span {
+            & > * {
                 padding: 50px;
                 background-color: #ffffff;
                 border-radius: 20px;
@@ -150,23 +152,8 @@
                 left: 50%;
                 transform: translate(-50%,-50%);
 
-                &::before {
-                    position: absolute;
-                    left: 100%;
-                    bottom: 100%;
-                    width: max-content;
-                    aspect-ratio: 1/1;
-                    padding: 5px 10px;
-                    line-height: 25px;
-                    content: 'x';
-                    background-color: red;
-                    color: white;
-                    font-weight: 700;
-                    font-size: 20px;
-                    border-radius: 10px;
-                }
-
                 & input {
+                    margin-bottom: 10px;
                     padding: 10px;
                     border-radius: 20px;
                     outline: 1px solid lightblue;
@@ -183,6 +170,36 @@
                     background-color: #0f0;
                 }
             }
+                & .close-btn {
+                    position: absolute;
+                    right: 0px;
+                    top: 0px;
+                    transform: translate(50%,-50%);
+                    aspect-ratio: 1/1;
+                    padding: 10px;
+                    background-color: red;
+                    cursor: pointer;
+                    color: white;
+                    font-weight: 700;
+                    font-size: 20px;
+                    border-radius: 1em;
+
+                    &:after {
+                        content: '';
+                        position: absolute;
+                        display: inline-block;
+                        top: -5px;
+                        left: -5px;
+                        height: calc(100% + 2px);
+                        width: calc(100% + 2px);
+                        padding: 2px;
+                        border: 2px solid transparent;
+                        border-radius: 1em;
+                    }
+                    &:hover::after {
+                        border: 2px solid blue;
+                    }
+                }
         }
         .no-trans{
             transition: none !important;
@@ -213,21 +230,27 @@
             <div class="view" id="other-slide" data-section="Others" style="background-color: black"></div>
         </div>
     </div>
-    <div id="dropdown-container" tabindex="-1">
-        <span>+</span>
+    <div id="dropdown-container" tabindex="0">
+        <span id="add-but">+</span>
         <div id="dropdown-list">
-            <span onclick="showURLOverlay()">URL of file</span>
-            <span><input type="file" id="upload" multiple="true"><label for="upload">Click to Upload</label></span>
+            <span role="button" onclick="showURLOverlay()">URL of file</span>
+            <label role="button">Click to Upload <input type="file" id="upload" multiple="true"></label>
         </div>
     </div>
-    <div class="url-overlay" tabindex="-1">
-        <span>
-        <label for="url-input">Link:</label><input id="url-input" type="text" required placeholder="https://example.com/file.xyz">
-        <label for="url-name">Name:</label><input id="url-name" type="text" placeholder="default: download[time]">
-        <button id="url-add">Add</button>
-    </span></div>
+    <div class="url-overlay">
+        <div class="url-form">
+            <label for="url-input">Link:</label>
+            <input id="url-input" type="text" required placeholder="https://example.com/file.xyz">
+            <br>
+            <label for="url-name">Name:</label>
+            <input id="url-name" type="text" placeholder="default: download[time]">
+            <br> 
+            <button id="url-add" type="button">Add</button>
+            <div class="close-btn">x</div>
+        </div>
+</div>
 
-</body>
+
 
     <script>
         document.getElementById("upload").addEventListener("input", ()=>{
@@ -242,14 +265,18 @@
         });
 
         document.getElementById("url-add").onclick = ()=>{
-            let link = document.getElementById("url-input").value;
-            let name = document.getElementById("url-name").value;
+            let linkField = document.getElementById("url-input"), nameField = document.getElementById("url-name");
+
+            let getVal = (field)=> field.value;
+
+            let link = getVal(linkField), name = getVal(nameField);
+
             name = name? name: "download_" + new Date().toUTCString().replaceAll(" ","_");
             if (link){
                 fetch(link)
+                .then(res => res.blob())
                 .then(res => {
-                    return res.blob()
-                }).then(res => {
+                    linkField.value = nameField.value = "";
                     save_file(res, res.type.split("/")[0], name);
                 }).catch(err => alert("The given URL is invalid"))
             }
@@ -287,8 +314,7 @@
                 target.style.left = newX + "px";
 
                 document.removeEventListener('touchmove', touchmove);
-                document.removeEventListener('touchend', touchstart);
-            });
+            }, {once: true});
 
             document.addEventListener('touchmove', touchmove=()=>{
                 let displacement = initLeft + (event.changedTouches[0].clientX - touchX);
@@ -371,13 +397,16 @@
             document.getElementById("all-slide").prepend(cont);
         }
 
+
+        document.getElementsByClassName("url-form")[0].addEventListener('click', (ev)=>{ev.stopPropagation()});
         function showURLOverlay(){
             let target = document.getElementsByClassName("url-overlay")[0];
             target.style.display = "block";
-            target.onclick = ()=>{
-                if (event.srcElement === target)target.style.display = "none";
+            document.getElementsByClassName("close-btn")[0].onclick = target.onclick = ()=>{
+                target.style.display = "none";
             }
             
         }
     </script>
-</html>
+
+</body></html>
